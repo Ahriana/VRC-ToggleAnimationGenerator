@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDK3.Avatars.ScriptableObjects;
-using System.Text.RegularExpressions;
-using System.Linq;
-using System;
-using UnityEditor.Animations;
 
 public class ToggleAnimationGenerator : EditorWindow
 {
