@@ -249,6 +249,12 @@ public class ToggleAnimationGenerator : EditorWindow
         layer.name = paramiterPath;
         layer.defaultWeight = 1;
 
+        var statemachine = new AnimatorStateMachine();
+        layer.stateMachine = statemachine;
+
+        AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(animatorController));
+        layer.stateMachine.hideFlags = HideFlags.HideInHierarchy;
+
         // create param
         AnimatorControllerParameter[] parameters = animatorController.parameters;
         AnimatorControllerParameter newParameter = new AnimatorControllerParameter();
@@ -275,7 +281,11 @@ public class ToggleAnimationGenerator : EditorWindow
         transition.duration = 0f;
         transition.exitTime = 0;
         transition.hasExitTime = false;
+
         enabledState.AddTransition(transition);
+        AssetDatabase.AddObjectToAsset(transition, AssetDatabase.GetAssetPath(animatorController));
+        transition.hideFlags = HideFlags.HideInHierarchy;
+
         transition.AddCondition(AnimatorConditionMode.IfNot, 1f, paramiterPath);
 
         // Add a transition from the entry disabled to the enabled state
@@ -284,16 +294,26 @@ public class ToggleAnimationGenerator : EditorWindow
         transition2.duration = 0f;
         transition2.exitTime = 0;
         transition2.hasExitTime = false;
+
         disabledState.AddTransition(transition2);
+        AssetDatabase.AddObjectToAsset(transition2, AssetDatabase.GetAssetPath(animatorController));
+        transition2.hideFlags = HideFlags.HideInHierarchy;
+
         transition2.AddCondition(AnimatorConditionMode.If, 1f, paramiterPath);
 
         // Add the states to the state machine
-        layer.stateMachine = new AnimatorStateMachine();
         layer.stateMachine.AddState(enabledState, new Vector3(300, 10, 0));
-        layer.stateMachine.AddState(disabledState, new Vector3(300, 110, 0));
-        layer.stateMachine.defaultState = disabledState;
+        AssetDatabase.AddObjectToAsset(enabledState, AssetDatabase.GetAssetPath(animatorController));
+        enabledState.hideFlags = HideFlags.HideInHierarchy;
 
+        layer.stateMachine.AddState(disabledState, new Vector3(300, 110, 0));
+        AssetDatabase.AddObjectToAsset(disabledState, AssetDatabase.GetAssetPath(animatorController));
+        enabledState.hideFlags = HideFlags.HideInHierarchy;
+
+        layer.stateMachine.defaultState = disabledState;
+        
         // Add the layer to the controller
         animatorController.AddLayer(layer);
+        EditorUtility.SetDirty(animatorController);
     }
 }
