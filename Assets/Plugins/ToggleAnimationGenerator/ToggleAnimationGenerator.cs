@@ -249,7 +249,7 @@ public class ToggleAnimationGenerator : EditorWindow
         layer.name = paramiterPath;
         layer.defaultWeight = 1;
 
-        var statemachine = new AnimatorStateMachine();
+        AnimatorStateMachine statemachine = new AnimatorStateMachine();
         layer.stateMachine = statemachine;
 
         AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(animatorController));
@@ -308,10 +308,10 @@ public class ToggleAnimationGenerator : EditorWindow
 
         layer.stateMachine.AddState(disabledState, new Vector3(300, 110, 0));
         AssetDatabase.AddObjectToAsset(disabledState, AssetDatabase.GetAssetPath(animatorController));
-        enabledState.hideFlags = HideFlags.HideInHierarchy;
+        disabledState.hideFlags = HideFlags.HideInHierarchy;
 
         layer.stateMachine.defaultState = disabledState;
-        
+
         // Add the layer to the controller
         animatorController.AddLayer(layer);
         EditorUtility.SetDirty(animatorController);
