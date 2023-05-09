@@ -23,6 +23,8 @@ public class ToggleAnimationGenerator : EditorWindow
     private bool isToggleSaved = true;
     private bool isToggleSynced = true;
 
+    private bool writeAnimatorDefaults = false;
+
     public ToggleAnimationGenerator()
     {
         titleContent = new GUIContent("Toggle Animation Generator");
@@ -51,6 +53,12 @@ public class ToggleAnimationGenerator : EditorWindow
             expressionParameters = null;
             avatarDescriptor = null;
             fxLayer = null;
+
+            isToggleEnabledDefault = false;
+            isToggleSaved = true;
+            isToggleSynced = true;
+
+            writeAnimatorDefaults = false;
         }
 
         EditorGUILayout.Space();
@@ -87,6 +95,7 @@ public class ToggleAnimationGenerator : EditorWindow
 
         string avatarPath = avatar == null ? "" : AnimationUtility.CalculateTransformPath(avatar.transform, null);
         string objectToAnimatePath = objectToAnimate == null ? "" : AnimationUtility.CalculateTransformPath(objectToAnimate.transform, null);
+
         if (!string.IsNullOrEmpty(objectToAnimatePath) && !string.IsNullOrEmpty(avatarPath))
         {
             paramiterPath = objectToAnimatePath.Replace(avatarPath, "").TrimStart('/');
@@ -124,6 +133,11 @@ public class ToggleAnimationGenerator : EditorWindow
         isToggleSynced = EditorGUILayout.Toggle("Toggle Synced", isToggleSynced);
 
         EditorGUILayout.Space();
+
+        GUILayout.Label("Animation Options", EditorStyles.boldLabel);
+        writeAnimatorDefaults = EditorGUILayout.Toggle("Write Animator Defaults", writeAnimatorDefaults);
+
+        EditorGUILayout.Space();
         EditorGUILayout.Space();
 
         if (GUILayout.Button("Select save location and build animations"))
@@ -137,8 +151,7 @@ public class ToggleAnimationGenerator : EditorWindow
                 "Please set the FX Layer."
             };
 
-            if (avatar == null || objectToAnimate == null || expressionsMenu == null ||
-                expressionParameters == null || avatarDescriptor == null || fxLayer == null)
+            if (avatar == null || objectToAnimate == null || expressionsMenu == null || expressionParameters == null || avatarDescriptor == null || fxLayer == null)
             {
                 string errorMsg = "";
                 for (int i = 0; i < errors.Length; i++)
@@ -159,6 +172,7 @@ public class ToggleAnimationGenerator : EditorWindow
                         errorMsg += "- " + errors[i];
                     }
                 }
+
                 EditorUtility.DisplayDialog("Error", errorMsg, "OK");
                 return;
             }
@@ -204,10 +218,7 @@ public class ToggleAnimationGenerator : EditorWindow
         control.name = paramiterName;
         control.icon = null;
         control.type = VRCExpressionsMenu.Control.ControlType.Toggle;
-        control.parameter = new VRCExpressionsMenu.Control.Parameter()
-        {
-            name = paramiterPath
-        };
+        control.parameter = new VRCExpressionsMenu.Control.Parameter() { name = paramiterPath };
 
         expressionsMenu.controls.Add(control);
 
@@ -267,13 +278,13 @@ public class ToggleAnimationGenerator : EditorWindow
         AnimatorState enabledState = new AnimatorState();
         enabledState.name = "Enabled";
         enabledState.motion = enabled;
-        enabledState.writeDefaultValues = true;
+        enabledState.writeDefaultValues = writeAnimatorDefaults;
 
         // Create an disabled state
         AnimatorState disabledState = new AnimatorState();
         disabledState.name = "Disabled";
         disabledState.motion = disabled;
-        disabledState.writeDefaultValues = true;
+        disabledState.writeDefaultValues = writeAnimatorDefaults;
 
         // Add a transition from the entry enabled to the disabled state
         AnimatorStateTransition transition = new AnimatorStateTransition();
